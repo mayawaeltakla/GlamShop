@@ -1,18 +1,43 @@
-// pages/product/[id].jsx import { useRouter } from "next/router"; import { useEffect, useState } from "react"; import axios from "axios"; import ReviewBox from "@/components/ReviewBox";
+// pages/product/[id].jsx 
+import { useRouter } from "next/router"; 
+import { useEffect, useState } from "react"; 
+import axios from "axios"; 
+import ReviewBox from "@/components/ReviewBox";
 
-export default function ProductDetails() { const router = useRouter(); const { id } = router.query; const [product, setProduct] = useState(null); const [theme, setTheme] = useState("light"); const [added, setAdded] = useState(false); const [rating, setRating] = useState(5); const [comment, setComment] = useState(""); const [reviews, setReviews] = useState([]);
+export default function ProductDetails() { 
+  const router = useRouter(); const { id } = router.query; 
+  const [product, setProduct] = useState(null); 
+  const [theme, setTheme] = useState("light"); 
+  const [added, setAdded] = useState(false); 
+  const [rating, setRating] = useState(5); 
+  const [comment, setComment] = useState(""); 
+  const [reviews, setReviews] = useState([]);
 
-useEffect(() => { const savedTheme = localStorage.getItem("theme"); if (savedTheme) setTheme(savedTheme); }, []);
+useEffect(() => {
+   const savedTheme = localStorage.getItem("theme"); if (savedTheme) setTheme(savedTheme); }, []);
 
-useEffect(() => { if (id) { fetchProduct(); loadReviews(); } }, [id]);
+useEffect(() => {
+   if (id) {
+      fetchProduct(); loadReviews(); } }, [id]);
 
-async function fetchProduct() { try { const res = await axios.get(`https://fakestoreapi.com/products/${id}`); setProduct(res.data); } catch (err) { console.error("خطأ في جلب المنتج", err); } }
+async function fetchProduct() {
+   try { const res = await axios.get(`https://fakestoreapi.com/products/${id}`); 
+   setProduct(res.data); } catch (err) { console.error("خطأ في جلب المنتج", err); } }
 
-function addToCart() { const currentCart = JSON.parse(localStorage.getItem("cart")) || []; currentCart.push(product); localStorage.setItem("cart", JSON.stringify(currentCart)); setAdded(true); setTimeout(() => setAdded(false), 2000); }
+function addToCart() {
+   const currentCart = JSON.parse(localStorage.getItem("cart")) || []; 
+   currentCart.push(product); 
+   localStorage.setItem("cart", JSON.stringify(currentCart)); 
+   setAdded(true); 
+   setTimeout(() => setAdded(false), 2000); }
 
-function loadReviews() { const stored = JSON.parse(localStorage.getItem(`reviews-${id}`)) || []; setReviews(stored); }
+function loadReviews() { 
+  const stored = JSON.parse(localStorage.getItem(`reviews-${id}`)) || []; 
+  setReviews(stored); }
 
-function handleReviewSubmit(e) { e.preventDefault(); if (!comment.trim()) return alert("اكتبي تعليقك يا مشمشة 🍑");
+function handleReviewSubmit(e) { 
+  e.preventDefault(); 
+  if (!comment.trim()) return alert("اكتبي تعليقك 🍑");
 
 const newReview = {
   rating,
@@ -28,9 +53,12 @@ setRating(5);
 
 }
 
-if (!product) { return ( <div style={{ padding: "20px", fontFamily: "Arial", backgroundColor: theme === "dark" ? "#111" : "#fff", color: theme === "dark" ? "#fff" : "#000", minHeight: "100vh", }} > جارٍ تحميل تفاصيل المنتج... </div> ); }
+if (!product) {
+   return ( 
+   <div style={{ padding: "20px", fontFamily: "Arial", backgroundColor: theme === "dark" ? "#111" : "#fff", color: theme === "dark" ? "#fff" : "#000", minHeight: "100vh", }} > جارٍ تحميل تفاصيل المنتج... </div> ); }
 
-return ( <div style={{ backgroundColor: theme === "dark" ? "#111" : "#fff", color: theme === "dark" ? "#fff" : "#000", minHeight: "100vh", padding: "20px", fontFamily: "Arial",}} > <button onClick={() => router.back()} style={{ marginBottom: "20px", padding: "10px 20px", borderRadius: "10px", cursor: "pointer", backgroundColor: theme === "dark" ? "#333" : "#ddd", border: "none", color: theme === "dark" ? "#fff" : "#000", }} > ← العودة </button>
+return ( 
+<div style={{ backgroundColor: theme === "dark" ? "#111" : "#fff", color: theme === "dark" ? "#fff" : "#000", minHeight: "100vh", padding: "20px", fontFamily: "Arial",}} > <button onClick={() => router.back()} style={{ marginBottom: "20px", padding: "10px 20px", borderRadius: "10px", cursor: "pointer", backgroundColor: theme === "dark" ? "#333" : "#ddd", border: "none", color: theme === "dark" ? "#fff" : "#000", }} > ← العودة </button>
 
 <div
     style={{

@@ -14,8 +14,9 @@ export default async function handler(req, res) {
 
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(401).json({ success: false, message: "البريد الإلكتروني غير مسجل" });
+      return res.status(401).json({ success: false, message: "البريد غير مسجل" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -27,7 +28,11 @@ export default async function handler(req, res) {
       expiresIn: "7d",
     });
 
-    res.status(200).json({ success: true, token });
+    res.status(200).json({
+      success: true,
+      token,
+      user: { name: user.name, email: user.email },
+    });
   } catch (err) {
     console.error("Login Error:", err);
     res.status(500).json({ success: false, message: "حدث خطأ في السيرفر" });

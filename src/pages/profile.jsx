@@ -150,21 +150,19 @@ export default function Profile() {
           }}
         >
           <p style={{ color: "#999", marginBottom: "20px" }}>
-            🛠️ سجلي دخولك أو أنشئي حساب للاستفادة من كل الميزات:
+            🛠 سجلي دخولك أو أنشئي حساب للاستفادة من كل الميزات:
           </p>
 
           <button
             onClick={() => router.push("/login")}
             style={{
-              padding: "12px 24px",
-              fontSize: "16px",
-              marginBottom: "10px",
-              backgroundColor: "#0070f3",
-              color: "#fff",
+              backgroundColor: "#2196f3",
+              color: "white",
               border: "none",
+              padding: "10px 20px",
               borderRadius: "8px",
               cursor: "pointer",
-              width: "100%",
+              marginBottom: "10px",
             }}
           >
             🔐 تسجيل الدخول
@@ -173,14 +171,12 @@ export default function Profile() {
           <button
             onClick={() => router.push("/signup")}
             style={{
-              padding: "12px 24px",
-              fontSize: "16px",
-              backgroundColor: "#4CAF50",
-              color: "#fff",
+              backgroundColor: "#4caf50",
+              color: "white",
               border: "none",
+              padding: "10px 20px",
               borderRadius: "8px",
               cursor: "pointer",
-              width: "100%",
             }}
           >
             📝 إنشاء حساب

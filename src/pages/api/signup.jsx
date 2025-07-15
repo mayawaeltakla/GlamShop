@@ -1,12 +1,13 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
-
-// قاعدة بيانات مؤقتة (بدليها لاحقًا بقاعدة Mongo أو Firebase)
-let users = [];
+import connectDB from "@/lib/db";
+import User from "@/models/User";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
+
+  await connectDB();
 
   const { name, email, password } = req.body;
 
@@ -14,32 +15,28 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: "يرجى ملء كل الحقول" });
   }
 
-  // تحقق من إعدادات الإيميل
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    return res.status(500).json({ message: "إعدادات الإيميل غير موجودة" });
-  }
-
-  // تأكد ما يكون البريد مسجل قبل
-  if (users.find((u) => u.email === email)) {
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
     return res.status(400).json({ message: "هذا البريد مسجل من قبل" });
   }
 
-  // ✅ تشفير كلمة المرور
   const hashedPassword = await bcrypt.hash(password, 10);
-
-  // توليد رمز التحقق
   const token = crypto.randomBytes(32).toString("hex");
 
-  // تسجيل المستخدم
-  users.push({
+  const newUser = new User({
     name,
     email,
-    password: hashedPassword, // كلمة السر المشفرة
+    password: hashedPassword,
     isVerified: false,
     emailToken: token,
   });
 
-  // إعداد المرسل
+  await newUser.save();
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    return res.status(500).json({ message: "إعدادات الإيميل غير موجودة" });
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -55,20 +52,16 @@ export default async function handler(req, res) {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "تأكيد بريدك الإلكتروني",
-      html: `
-        <p>أهلاً ${name} 🌟</p>
-        <p>اضغطي الرابط التالي لتأكيد بريدك:</p>
-        <a href="${confirmLink}">${confirmLink}</a>
-      ,`
+      html: `<p>مرحبًا ${name} 🌟</p><p>اضغطي الرابط لتأكيد بريدك:</p><a href="${confirmLink}">${confirmLink}</a>`,
     });
 
     return res.status(200).json({
       message: "تم التسجيل، تحقق من بريدك الإلكتروني ✉️",
     });
   } catch (error) {
-    console.error("Email send error:", error);
-    return res
-      .status(500)
-      .json({ message: "حدث خطأ أثناء إرسال الإيميل، حاولي لاحقًا" });
+    console.error("Email Error:", error);
+    return res.status(500).json({
+      message: "حدث خطأ أثناء إرسال الإيميل، حاولي لاحقًا",
+    });
   }
 }

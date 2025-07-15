@@ -105,27 +105,7 @@ export default function Home() {
       >
         <Navbar theme={theme} toggleTheme={toggleTheme} />
 
-        {/* أزرار تسجيل الدخول */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px", margin: "10px" }}>
-          <Link href="/login">
-            <button style={{
-              padding: "10px 16px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              backgroundColor: "#f0f0f0",
-              cursor: "pointer"
-            }}>تسجيل الدخول</button>
-          </Link>
-          <Link href="/register">
-            <button style={{
-              padding: "10px 16px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              backgroundColor: "#ffe0e6",
-              cursor: "pointer"
-            }}>إنشاء حساب</button>
-          </Link>
-        </div>
+       
 
         <div style={{ padding: "20px" }}>
           {/* البحث */}
